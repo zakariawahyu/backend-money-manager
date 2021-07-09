@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Transaction;
+use App\Models\Wallet;
+use App\Models\Category;
 
 class TransactionController extends Controller
 {
@@ -13,17 +16,20 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $transactions = Transaction::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if(empty($transactions)) {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => "Success get all data",
+            "status" => "succes",
+            "data" => $transactions
+        ], 200);
     }
 
     /**
@@ -34,7 +40,42 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'id_category' => 'required',
+            'id_wallet' => 'required',
+            'date' => 'required',
+            'note' => 'required',
+            'amount' => 'required',
+        ]);
+
+        $transaction = new Transaction();
+        $transaction->id_category = $request->input('id_category');
+        $transaction->id_wallet = $request->input('id_wallet');
+        $transaction->date = $request->input('date');
+        $transaction->note = $request->input('note');
+        $transaction->amount = $request->input('amount');
+
+
+        $category = Category::find($request->input('id_category'));
+        $wallet = Wallet::find($request->input('id_wallet'));
+        $balance = $wallet['balance'];
+
+        if ($category['id_transaction_type'] == 1) {
+            $wallet->balance = $balance + $request->input('amount');
+        } else{
+            $wallet->balance = $balance - $request->input('amount');
+        }
+
+        $wallet->save();
+        $transaction->save();
+
+        return response()->json([
+            "message" => "Success Added",
+            "status" => "success",
+            "data" => [
+                "attributes" => $transaction
+            ]
+        ], 200);
     }
 
     /**
@@ -45,18 +86,20 @@ class TransactionController extends Controller
      */
     public function show($id)
     {
-        //
-    }
+        $transaction = Transaction::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        if(!$transaction) {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error"
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => "Success get data",
+            "status" => "success",
+            "data" => $transaction
+        ]);
     }
 
     /**
@@ -68,7 +111,37 @@ class TransactionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'id_category' => 'required',
+            'id_wallet' => 'required',
+            'date' => 'required',
+            'note' => 'required',
+            'amount' => 'required',
+        ]);
+
+        $transaction = Transaction::find($id);
+
+        if ($transaction) {
+            $transaction->id_category = $request->input('id_category');
+            $transaction->id_wallet = $request->input('id_wallet');
+            $transaction->date = $request->input('date');
+            $transaction->note = $request->input('note');
+            $transaction->amount = $request->input('amount');
+            $transaction->save();
+
+            return response()->json([
+                "message" => "Success Updated",
+                "status" => "succcess",
+                "data" => [
+                    "attributes" => $transaction
+                ]
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
     }
 
     /**
@@ -79,6 +152,22 @@ class TransactionController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $transaction = Transaction::find($id);
+
+        if($transaction) {
+            $transaction->delete();
+            return response()->json([
+                "message" => "Success Deleted",
+                "status" => "success",
+                "data" => [
+                    "attributes" => $transaction
+                ]
+            ], 200);
+        }else {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
     }
 }

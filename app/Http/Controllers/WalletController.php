@@ -16,7 +16,7 @@ class WalletController extends Controller
     {
         $wallets = Wallet::all();
 
-        if(empty($wallets->name_wallet)) {
+        if(empty($wallets)) {
             return response()->json([
                 "message" => "Data Not Found",
                 "status" => "error",

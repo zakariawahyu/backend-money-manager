@@ -38,4 +38,11 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->post('/category', 'CategoryController@store');
     $router->put('/category/{id}', 'CategoryController@update');
     $router->delete('/category/{id}', 'CategoryController@destroy');
+
+    // Transaction
+    $router->get('/transaction', 'TransactionController@index');
+    $router->get('/transaction/{id}', 'TransactionController@show');
+    $router->post('/transaction', 'TransactionController@store');
+    $router->put('/transaction/{id}', 'TransactionController@update');
+    $router->delete('/transaction/{id}', 'TransactionController@destroy');
 });
