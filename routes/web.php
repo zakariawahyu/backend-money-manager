@@ -24,4 +24,11 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->post('/wallet', 'WalletController@store');
     $router->put('/wallet/{id}', 'WalletController@update');
     $router->delete('/wallet/{id}', 'WalletController@destroy');
+
+    // Transaction Type
+    $router->get('/transaction-type', 'TransactionTypeController@index');
+    $router->get('/transaction-type/{id}', 'TransactionTypeController@show');
+    $router->post('/transaction-type', 'TransactionTypeController@store');
+    $router->put('/transaction-type/{id}', 'TransactionTypeController@update');
+    $router->delete('/transaction-type/{id}', 'TransactionTypeController@destroy');
 });

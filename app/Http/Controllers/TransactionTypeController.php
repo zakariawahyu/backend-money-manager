@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TransactionType;
 
 class TransactionTypeController extends Controller
 {
@@ -13,17 +14,20 @@ class TransactionTypeController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $transactionTypes = TransactionType::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if(empty($transactionTypes)) {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => "Success get all data",
+            "status" => "succes",
+            "data" => $transactionTypes
+        ], 200);
     }
 
     /**
@@ -34,7 +38,21 @@ class TransactionTypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name_transaction_type' => 'required',
+        ]);
+
+        $transactionType = new TransactionType();
+        $transactionType->name_transaction_type = $request->input('name_transaction_type');
+        $transactionType->save();
+
+        return response()->json([
+            "message" => "Success Added",
+            "status" => "success",
+            "data" => [
+                "attributes" => $transactionType
+            ]
+        ], 200);
     }
 
     /**
@@ -45,18 +63,20 @@ class TransactionTypeController extends Controller
      */
     public function show($id)
     {
-        //
-    }
+        $transactionType = TransactionType::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        if(!$transactionType) {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error"
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => "Success get data",
+            "status" => "success",
+            "data" => $transactionType
+        ]);
     }
 
     /**
@@ -68,7 +88,29 @@ class TransactionTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name_transaction_type' => 'required',
+        ]);
+
+        $transactionType = TransactionType::find($id);
+
+        if ($transactionType) {
+            $transactionType->name_transaction_type = $request->input('name_transaction_type');
+            $transactionType->save();
+
+            return response()->json([
+                "message" => "Success Updated",
+                "status" => "succcess",
+                "data" => [
+                    "attributes" => $transactionType
+                ]
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
     }
 
     /**
@@ -79,6 +121,23 @@ class TransactionTypeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $transactionType = TransactionType::find($id);
+
+        if($transactionType) {
+
+            $transactionType->delete();
+            return response()->json([
+                "message" => "Success Deleted",
+                "status" => "success",
+                "data" => [
+                    "attributes" => $transactionType
+                ]
+            ], 200);
+        }else {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
     }
 }
