@@ -16,3 +16,12 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->group(['prefix' => 'api/v1'], function () use ($router) {
+    // Wallet
+    $router->get('/wallet', 'WalletController@index');
+    $router->get('/wallet/{id}', 'WalletController@show');
+    $router->post('/wallet', 'WalletController@store');
+    $router->put('/wallet/{id}', 'WalletController@update');
+    $router->delete('/wallet/{id}', 'WalletController@destroy');
+});

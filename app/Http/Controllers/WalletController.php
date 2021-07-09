@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Wallet;
 
 class WalletController extends Controller
 {
@@ -13,17 +14,20 @@ class WalletController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $wallets = Wallet::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if(empty($wallets->name_wallet)) {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => "Success get all data",
+            "status" => "succes",
+            "data" => $wallets
+        ], 200);
     }
 
     /**
@@ -34,7 +38,23 @@ class WalletController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name_wallet' => 'required',
+            'balance' => 'required',
+        ]);
+
+        $wallet = new Wallet();
+        $wallet->name_wallet = $request->input('name_wallet');
+        $wallet->balance = $request->input('balance');
+        $wallet->save();
+
+        return response()->json([
+            "message" => "Success Added",
+            "status" => "success",
+            "data" => [
+                "attributes" => $wallet
+            ]
+        ], 200);
     }
 
     /**
@@ -45,18 +65,20 @@ class WalletController extends Controller
      */
     public function show($id)
     {
-        //
-    }
+        $wallet = Wallet::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        if(!$wallet) {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error"
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => "Success get data",
+            "status" => "success",
+            "data" => $wallet
+        ]);
     }
 
     /**
@@ -68,7 +90,31 @@ class WalletController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name_wallet' => 'required',
+            'balance' => 'required',
+        ]);
+
+        $wallet = Wallet::find($id);
+
+        if ($wallet) {
+            $wallet->name_wallet = $request->input('name_wallet');
+            $wallet->balance = $request->input('balance');
+            $wallet->save();
+
+            return response()->json([
+                "message" => "Success Updated",
+                "status" => "succcess",
+                "data" => [
+                    "attributes" => $wallet
+                ]
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
     }
 
     /**
@@ -79,6 +125,23 @@ class WalletController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $wallet = Wallet::find($id);
+
+        if($wallet) {
+
+            $wallet->delete();
+            return response()->json([
+                "message" => "Success Deleted",
+                "status" => "success",
+                "data" => [
+                    "attributes" => $wallet
+                ]
+            ], 200);
+        }else {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
     }
 }
