@@ -31,4 +31,11 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->post('/transaction-type', 'TransactionTypeController@store');
     $router->put('/transaction-type/{id}', 'TransactionTypeController@update');
     $router->delete('/transaction-type/{id}', 'TransactionTypeController@destroy');
+
+    // Category
+    $router->get('/category', 'CategoryController@index');
+    $router->get('/category/{id}', 'CategoryController@show');
+    $router->post('/category', 'CategoryController@store');
+    $router->put('/category/{id}', 'CategoryController@update');
+    $router->delete('/category/{id}', 'CategoryController@destroy');
 });
