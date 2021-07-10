@@ -33,6 +33,41 @@ class TransactionController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexJoin(Request $request)
+    {
+        if (!empty($request->transaction_type)) {
+            $idTrsansactiontype = $request->transaction_type;
+            $transactions = Transaction::with(['wallet', 'category', 'category.transactiontype'])->whereHas('category.transactiontype', function($q) use($idTrsansactiontype){
+                $q->where('id', $idTrsansactiontype);
+            })->get();
+        }else if(!empty($request->wallet)) {
+            $idWallet = $request->wallet;
+            $transactions = Transaction::with(['wallet', 'category', 'category.transactiontype'])->whereHas('wallet', function($q) use($idWallet){
+                $q->where('id', $idWallet);
+            })->get();
+        } else{
+            $transactions = Transaction::with(['wallet', 'category', 'category.transactiontype'])->get();
+        }
+
+        if(empty($transactions)) {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error",
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => "Success get all data",
+            "status" => "succes",
+            "data" => $transactions
+        ], 200);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -87,6 +122,30 @@ class TransactionController extends Controller
     public function show($id)
     {
         $transaction = Transaction::find($id);
+
+        if(!$transaction) {
+            return response()->json([
+                "message" => "Data Not Found",
+                "status" => "error"
+            ], 404);
+        }
+
+        return response()->json([
+            "message" => "Success get data",
+            "status" => "success",
+            "data" => $transaction
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showJoin($id)
+    {
+        $transaction = Transaction::with(['wallet', 'category', 'category.transactiontype'])->where('id', $id)->first();
 
         if(!$transaction) {
             return response()->json([

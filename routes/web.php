@@ -45,4 +45,6 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
     $router->post('/transaction', 'TransactionController@store');
     $router->put('/transaction/{id}', 'TransactionController@update');
     $router->delete('/transaction/{id}', 'TransactionController@destroy');
+    $router->get('/transaction-detail', 'TransactionController@indexJoin');
+    $router->get('/transaction-detail/{id}', 'TransactionController@showJoin');
 });

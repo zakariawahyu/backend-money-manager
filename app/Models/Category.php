@@ -12,4 +12,9 @@ class Category extends Model
     {
         return $this->hasMany(transaction::class, 'id_category');
     }
+
+    public function transactiontype()
+    {
+        return $this->belongsTo(TransactionType::class, 'id_transaction_type');
+    }
 }
